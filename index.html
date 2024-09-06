@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeopardy Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="jeopardy-board"></div>
+
+    <div id="answer-section">
+        <input type="text" id="answer-input" placeholder="Enter your answer">
+        <button id="submit-answer">Submit Answer</button>
+    </div>
+
+    <div id="players-container">
+        <div id="players">
+            <div class="player">
+                <label for="player1-name">Player 1</label>
+                <input type="text" id="player1-name" placeholder="Enter name">
+                <div id="player1-score">0</div>
+            </div>
+            <div class="player">
+                <label for="player2-name">Player 2</label>
+                <input type="text" id="player2-name" placeholder="Enter name">
+                <div id="player2-score">0</div>
+            </div>
+            <div class="player">
+                <label for="player3-name">Player 3</label>
+                <input type="text" id="player3-name" placeholder="Enter name">
+                <div id="player3-score">0</div>
+            </div>
+        </div>
+        <button id="reset-button">Reset Game</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
