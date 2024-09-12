@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
       );
       const categories = await Promise.all(categoryPromises);
 
-      // Process each category and get the top 5 questions
       categoriesData = categories.map((category) => ({
         title: category.title,
         questions: category.clues.slice(0, 5).map((clue) => ({
@@ -23,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }))
       }));
 
-      createBoard(); // create the board with all categories
+      createBoard();
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
@@ -34,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function createBoard() {
     board.innerHTML = ''; // Clear the board
 
-    // Create the columns for each category
     categoriesData.forEach((category) => {
       const categoryElement = document.createElement('div');
       categoryElement.classList.add('category');
@@ -42,9 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
       board.appendChild(categoryElement);
     });
 
-    // Add the questions for each category
     for (let i = 0; i < 5; i++) {
-      // Each category has 5 questions
       categoriesData.forEach((category) => {
         const questionElement = document.createElement('div');
         questionElement.classList.add('question');
@@ -64,10 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
         questionElement.dataset.value = category.questions[i].value;
 
         board.appendChild(questionElement);
+
+        questionElement.setAttribute('tabindex', 0);
       });
     }
 
-    // Add event listeners for question clicks
     document.querySelectorAll('.question').forEach((question) => {
       question.addEventListener('click', handleQuestionClick);
     });
@@ -89,7 +86,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  document.getElementById('submit-answer').addEventListener('click', () => {
+  // Submit answer either via clicking or pressing Enter
+  document
+    .getElementById('submit-answer')
+    .addEventListener('click', submitAnswer);
+
+  document
+    .getElementById('answer-input')
+    .addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        submitAnswer();
+      }
+    });
+
+  function submitAnswer() {
     if (!currentQuestion) return;
 
     const answerInput = document
@@ -114,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('answer-input').value = '';
 
     currentPlayer = nextPlayer(currentPlayer);
-  });
+  }
 
   function updatePlayerScore(playerId) {
     document.getElementById(`${playerId}-score`).textContent =
@@ -144,5 +154,5 @@ document.addEventListener('DOMContentLoaded', () => {
     createBoard();
   });
 
-  fetchCategories(); // Fetch all categories and clues on page load
+  fetchCategories();
 });
