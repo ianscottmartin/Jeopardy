@@ -162,6 +162,7 @@ h1 {
     }
 }
 
+/*
 @media (max-width: 768px) {
     #jeopardy-board {
         grid-template-columns: repeat(2, 1fr);
@@ -198,4 +199,4 @@ h1 {
         height: 60px;
         font-size: 12px;
     }
-}
+} */
