@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const board = document.getElementById('jeopardy-board');
   const apiUrl = 'https://rithm-jeopardy.herokuapp.com/api/category?id=';
   let categories = [];
@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let clueAnswered = 0;
   let totalQuestions = 0;
 
-  // Fetch categories from the API
   async function fetchCategories() {
     const categoryIds = [2, 11, 12, 13, 14, 15];
     try {
@@ -32,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Create the Jeopardy board
   const createBoard = () => {
     board.innerHTML = '';
     categories.forEach((category) => {
@@ -66,7 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
     resetInput();
   };
 
-  // Handle question click to flip the card, make function name reflect function better
   const flipCard = function () {
     if (!this.classList.contains('flipped')) {
       currentQuestion = this;
@@ -76,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Submit the player's answer
   const submitAnswer = () => {
     if (!currentQuestion) return;
 
@@ -88,14 +84,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Fetch correct answers and clean them
     const correctAnswers = currentQuestion.dataset.answer
       .split(',')
       .map((answer) => cleanAnswer(answer.trim()));
-
     const questionValue = parseInt(currentQuestion.dataset.value);
 
-    // Check if any correct answer matches the user's input
     const isCorrect = correctAnswers.some(
       (correctAnswer) =>
         correctAnswer.includes(answerValue) ||
@@ -105,12 +98,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isCorrect) {
       displayAnswer(true, correctAnswers);
       playerScores[currentPlayerIndex] += questionValue;
-      resetPlayer(); // Reset attempted players after a correct answer
+      resetPlayer();
     } else {
       playerScores[currentPlayerIndex] -= questionValue;
       attemptedPlayers.push(currentPlayerIndex);
 
-      // Check if all players have attempted
       if (attemptedPlayers.length === 3) {
         displayAnswer(false, correctAnswers);
       } else {
@@ -125,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
     resetInput();
   };
 
-  // Display the correct or incorrect answer
   const displayAnswer = (isCorrect, correctAnswers) => {
     const message = isCorrect
       ? `Correct! ${correctAnswers.join(', ')}`
@@ -139,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
     checkGameOver();
   };
 
-  // Check if the game is over
   const checkGameOver = () => {
     if (clueAnswered === totalQuestions) {
       const winnerIndex = playerScores.indexOf(Math.max(...playerScores));
@@ -153,40 +143,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Reset the answer input field
   const resetInput = () => {
     const answerInput = document.getElementById('answer-input');
     answerInput.value = '';
     answerInput.focus();
   };
 
-  // Update player score on the screen
   const updateScore = (playerIndex) => {
     document.querySelector(
       `.player[data-player-index="${playerIndex}"] .score`
     ).textContent = playerScores[playerIndex];
   };
 
-  // Move to the next player's turn
   const nextPlayer = () => {
     currentPlayerIndex = (currentPlayerIndex + 1) % 3;
   };
 
-  // Clean the input and correct answers for comparison
   const cleanAnswer = (str) => {
     return str
-      .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '') // Remove special characters
-      .replace(/\bthe\b/g, '') // Remove 'the' from answers
-      .toLowerCase() // Convert to lowercase
-      .trim(); // Remove extra spaces
+      .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '')
+      .replace(/\bthe\b/g, '')
+      .toLowerCase()
+      .trim();
   };
 
-  // Reset attempted players array
   const resetPlayer = () => {
     attemptedPlayers = [];
   };
 
-  // Disable game interactions when the game is over
   const disableGame = () => {
     document
       .querySelectorAll('.question')
@@ -195,8 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('answer-input').disabled = true;
   };
 
-  // Reset the game to its initial state
-  const resetGame = () => {
+  const resetGame = async () => {
     if (confirm('Are you sure you want to reset the game?')) {
       playerScores = [0, 0, 0];
       currentPlayerIndex = 0;
@@ -216,11 +199,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       document.getElementById('submit-answer').disabled = false;
       document.getElementById('answer-input').disabled = false;
-      fetchCategories();
+      await fetchCategories(); // Reset game and refetch categories
     }
   };
 
-  // Event listeners for submitting answers and resetting the game
   document
     .getElementById('submit-answer')
     .addEventListener('click', submitAnswer);
@@ -232,6 +214,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('reset-button').addEventListener('click', resetGame);
 
-  // Fetch categories and start the game
-  fetchCategories();
+  await fetchCategories();
 });
