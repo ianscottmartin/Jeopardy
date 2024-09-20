@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let playerScores = [0, 0, 0];
   let currentPlayerIndex = 0;
   let attemptedPlayers = [];
-  let answeredQuestions = 0;
+  let clueAnswered = 0;
   let totalQuestions = 0;
 
   // Fetch categories from the API
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
       categories = fetchedCategories.map((category) => ({
         title: category.title,
         questions: category.clues.slice(0, 5).map((clue) => ({
-          value: clue.value || 200,
+          value: clue.value || 400,
           question: clue.question,
           answers: clue.answer.split(',').map((answer) => answer.trim())
         }))
@@ -61,18 +61,18 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
     document.querySelectorAll('.question').forEach((question) => {
-      question.addEventListener('click', handleQuestionClick);
+      question.addEventListener('click', flipCard);
     });
-    resetInputField();
+    resetInput();
   };
 
   // Handle question click to flip the card, make function name reflect function better
-  const handleQuestionClick = function () {
+  const flipCard = function () {
     if (!this.classList.contains('flipped')) {
       currentQuestion = this;
       this.classList.add('flipped');
-      resetInputField();
-      resetAttemptedPlayers();
+      resetInput();
+      resetPlayer();
     }
   };
 
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isCorrect) {
       displayAnswer(true, correctAnswers);
       playerScores[currentPlayerIndex] += questionValue;
-      resetAttemptedPlayers(); // Reset attempted players after a correct answer
+      resetPlayer(); // Reset attempted players after a correct answer
     } else {
       playerScores[currentPlayerIndex] -= questionValue;
       attemptedPlayers.push(currentPlayerIndex);
@@ -121,8 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    updatePlayerScore(currentPlayerIndex);
-    resetInputField();
+    updateScore(currentPlayerIndex);
+    resetInput();
   };
 
   // Display the correct or incorrect answer
@@ -134,14 +134,14 @@ document.addEventListener('DOMContentLoaded', () => {
         )}`;
     currentQuestion.querySelector('.back').innerHTML = message;
     currentQuestion = null;
-    resetAttemptedPlayers();
-    answeredQuestions++;
+    resetPlayer();
+    clueAnswered++;
     checkGameOver();
   };
 
   // Check if the game is over
   const checkGameOver = () => {
-    if (answeredQuestions === totalQuestions) {
+    if (clueAnswered === totalQuestions) {
       const winnerIndex = playerScores.indexOf(Math.max(...playerScores));
       const winnerName =
         document.querySelector(`#player-name-${winnerIndex}`).value ||
@@ -149,19 +149,19 @@ document.addEventListener('DOMContentLoaded', () => {
       alert(
         `Game Over! ${winnerName} wins with a score of ${playerScores[winnerIndex]}!`
       );
-      disableGameInteractions();
+      disableGame();
     }
   };
 
   // Reset the answer input field
-  const resetInputField = () => {
+  const resetInput = () => {
     const answerInput = document.getElementById('answer-input');
     answerInput.value = '';
     answerInput.focus();
   };
 
   // Update player score on the screen
-  const updatePlayerScore = (playerIndex) => {
+  const updateScore = (playerIndex) => {
     document.querySelector(
       `.player[data-player-index="${playerIndex}"] .score`
     ).textContent = playerScores[playerIndex];
@@ -182,12 +182,12 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Reset attempted players array
-  const resetAttemptedPlayers = () => {
+  const resetPlayer = () => {
     attemptedPlayers = [];
   };
 
   // Disable game interactions when the game is over
-  const disableGameInteractions = () => {
+  const disableGame = () => {
     document
       .querySelectorAll('.question')
       .forEach((q) => (q.style.pointerEvents = 'none'));
@@ -201,8 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
       playerScores = [0, 0, 0];
       currentPlayerIndex = 0;
       currentQuestion = null;
-      resetAttemptedPlayers();
-      answeredQuestions = 0;
+      resetPlayer();
+      clueAnswered = 0;
       totalQuestions = 0;
 
       document.querySelectorAll('.player .score').forEach((scoreDiv) => {
