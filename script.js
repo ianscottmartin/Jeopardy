@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       document.getElementById('submit-answer').disabled = false;
       document.getElementById('answer-input').disabled = false;
-      await fetchCategories(); // Reset game and refetch categories
+      await fetchCategories(); 
     }
   };
 
