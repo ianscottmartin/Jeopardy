@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const cleanAnswer = (str) => {
     return str
       .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '')
-      .replace(/\bthe\b/g, '')
+      .replaceAll('the', '')
       .toLowerCase()
       .trim();
   };
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       document.getElementById('submit-answer').disabled = false;
       document.getElementById('answer-input').disabled = false;
-      await fetchCategories(); 
+      await fetchCategories();
     }
   };
 
